@@ -18,12 +18,15 @@ func main() {
 	port := flag.String("p", "8080", "port")
 	flag.Parse()
 
-	handler(*port)
+	if err := handler(*port); err != nil {
+		log.Println("Failed server start up")
+		log.Fatalln(err)
+	}
 }
 
 func handler(port string) error {
 	http.HandleFunc("/test", testHandler)
-	log.Printf("Server runnint port: %s\n", port)
+	log.Printf("Server start up port: %s\n", port)
 	err := http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
 	if err != nil {
 		return err
@@ -32,9 +35,11 @@ func handler(port string) error {
 }
 
 func testHandler(w http.ResponseWriter, r *http.Request) {
+	now := time.Now()
+	log.Println("[ACCESS LOG]: /test")
 	res := testResponse{
 		Test: "test",
-		Time: time.Now(),
+		Time: now,
 	}
 
 	str, err := json.Marshal(res)
