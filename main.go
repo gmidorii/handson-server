@@ -27,7 +27,9 @@ func main() {
 func handler(port string) error {
 	http.HandleFunc("/test", testHandler)
 	http.HandleFunc("/ping", healthHandler)
+	http.HandleFunc("/error", errorHandler)
 	log.Printf("Server start up port: %s\n", port)
+	log.Println("All API:\n /test\n /ping\n /error")
 
 	err := http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
 	if err != nil {
@@ -59,4 +61,10 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("[ACCESS LOG]: /ping")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("OK"))
+}
+
+func errorHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("[ACCESS LOG]: /error")
+	w.WriteHeader(http.StatusInternalServerError)
+	w.Write([]byte("ERROR"))
 }
